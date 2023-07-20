@@ -1,0 +1,10 @@
+#!/bin/sh
+. /opt/mambaforge/etc/profile.d/conda.sh  
+. /opt/mambaforge/etc/profile.d/mamba.sh  
+mamba activate rna
+if [ ! -d "fastq" ]; then
+  mkdir fastq
+fi
+ls SRA|while read i;do echo $i;parallel-fastq-dump -t 30  -O fastq --split-files --gzip -s SRA/$i;cd fastq; \
+mv ${i%.*}_1.fastq.gz ${i%.*}_S1_L001_I1_001.fastq.gz;mv ${i%.*}_2.fastq.gz ${i%.*}_S1_L001_R1_001.fastq.gz;
+mv ${i%.*}_3.fastq.gz ${i%.*}_S1_L001_R2_001.fastq.gz;cd ../;done  > split.log 2>&1
